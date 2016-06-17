@@ -13,7 +13,7 @@
 <meta property="og:url" content="http://yoursite.com/2015/12/17/iOS之单例模式初探/index.html">
 <meta property="og:site_name" content="孙楚">
 <meta property="og:description" content="单例模式可能是设计模式中最简单的形式了，这一模式的意图就是使得类中的一个对象成为系统中的唯一实例。它提供了对类的对象所提供的资源的全局访问点。因此需要用一种只允许生成对象类的唯一实例的机制。下面让我们来看下单例的作用：可以保证的程序运行过程，一个类只有一个示例，而且该实例易于供外界访问从而方便地控制了实例个数，并节约系统资源。单例模式的使用场合类只能有一个实例，并且必须从一个为人数值的访问点对其访">
-<meta property="og:updated_time" content="2016-06-17T13:08:28.000Z">
+<meta property="og:updated_time" content="2016-06-17T13:11:33.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="iOS之单例模式初探">
 <meta name="twitter:description" content="单例模式可能是设计模式中最简单的形式了，这一模式的意图就是使得类中的一个对象成为系统中的唯一实例。它提供了对类的对象所提供的资源的全局访问点。因此需要用一种只允许生成对象类的唯一实例的机制。下面让我们来看下单例的作用：可以保证的程序运行过程，一个类只有一个示例，而且该实例易于供外界访问从而方便地控制了实例个数，并节约系统资源。单例模式的使用场合类只能有一个实例，并且必须从一个为人数值的访问点对其访">
@@ -214,7 +214,6 @@ userInfo:nil];
 <li>(id)copyWithZone:(NSZone *)zone \<br>{ \<br>  return _instance; \<br>}<br>使用方法<br>//.h类<br>//引入这个宏文件<br>#import “WMSingleton.h”<br>@interface WMObject : NSObject<br>WMSingletonH(object)<br>@end<br>//.m类</li>
 </ul>
 <p>@implementation WMObject<br>WMSingletonM(Car)<br>@end<br>通过上面的演练我们基本上学习了一些基本的单例模式然后在Cocoa Touch框架中同样存在着大量的单例模式让我们来学习，比如UIApplication、UIAccelerometer、以及NSFileManager等等。所以在单例模式的学习上还是依旧的任重道远呀。。。</p>
-<p>文／晓风沐晨（简书作者）<br>原文链接：<a href="http://www.jianshu.com/p/7486ebfcd93b" target="_blank" rel="external">http://www.jianshu.com/p/7486ebfcd93b</a><br>著作权归作者所有，转载请联系作者获得授权，并标注“简书作者”。</p>
 <p></p>
 
               
@@ -223,7 +222,7 @@ userInfo:nil];
               <a href="/2015/12/17/iOS之单例模式初探/" class="article-date">
   <time datetime="2015-12-17T13:06:39.000Z" itemprop="datePublished">2015-12-17</time>
 </a>
-              <a data-url="http://yoursite.com/2015/12/17/iOS之单例模式初探/" data-id="cipjr5dsc0000cjs69frdl97s" class="article-share-link">Share</a>
+              <a data-url="http://yoursite.com/2015/12/17/iOS之单例模式初探/" data-id="cipjr86jl0000dds6pyajyil1" class="article-share-link">Share</a>
               
               
             </footer>
