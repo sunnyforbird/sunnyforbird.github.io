@@ -1,13 +1,21 @@
-
-
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="utf-8">
-    <title>iOS之单例模式初探 | 孙楚</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-    <meta name="baidu-site-verification" content="1ZsVVOmjoT" />
-    <meta name="description" content="单例模式可能是设计模式中最简单的形式了，这一模式的意图就是使得类中的一个对象成为系统中的唯一实例。它提供了对类的对象所提供的资源的全局访问点。因此需要用一种只允许生成对象类的唯一实例的机制。下面让我们来看下单例的作用：可以保证的程序运行过程，一个类只有一个示例，而且该实例易于供外界访问从而方便地控制了实例个数，并节约系统资源。单例模式的使用场合类只能有一个实例，并且必须从一个为人数值的访问点对其访">
+  <meta charset="utf-8">
+  
+  
+  <meta name="description" content="北纬24度的四月是夏天" />
+  
+
+  
+  
+  
+  
+  
+  
+  <title>iOS之单例模式初探 | 孙楚</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="单例模式可能是设计模式中最简单的形式了，这一模式的意图就是使得类中的一个对象成为系统中的唯一实例。它提供了对类的对象所提供的资源的全局访问点。因此需要用一种只允许生成对象类的唯一实例的机制。下面让我们来看下单例的作用：可以保证的程序运行过程，一个类只有一个示例，而且该实例易于供外界访问从而方便地控制了实例个数，并节约系统资源。单例模式的使用场合类只能有一个实例，并且必须从一个为人数值的访问点对其访">
 <meta property="og:type" content="article">
 <meta property="og:title" content="iOS之单例模式初探">
 <meta property="og:url" content="http://yoursite.com/2015/12/17/iOS之单例模式初探/index.html">
@@ -17,154 +25,68 @@
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="iOS之单例模式初探">
 <meta name="twitter:description" content="单例模式可能是设计模式中最简单的形式了，这一模式的意图就是使得类中的一个对象成为系统中的唯一实例。它提供了对类的对象所提供的资源的全局访问点。因此需要用一种只允许生成对象类的唯一实例的机制。下面让我们来看下单例的作用：可以保证的程序运行过程，一个类只有一个示例，而且该实例易于供外界访问从而方便地控制了实例个数，并节约系统资源。单例模式的使用场合类只能有一个实例，并且必须从一个为人数值的访问点对其访">
-    
-      <link rel="alternative" href="/atom.xml" title="孙楚" type="application/atom+xml">
-    
-    
-      <link rel="icon" href="/css/favicon.ico">
-    
-    <link rel="stylesheet" href="/css/style.css">
+  
+  
+    <link rel="icon" href="/css/images/favicon.ico">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
 
-    
-<!-- Baidu Analytics -->
-<script type="text/javascript">
-var _hmt = _hmt || [];
-(function() {
-  var hm = document.createElement("script");
-  hm.src = "//hm.baidu.com/hm.js?fe2c7555911b8560db5e56121c5d5960";
-  var s = document.getElementsByTagName("script")[0]; 
-  s.parentNode.insertBefore(hm, s);
-})();
-</script>
-<!-- End Baidu Analytics -->
-
-
-    <script src="//cdn.bootcss.com/jquery/2.0.3/jquery.min.js"></script>
+  
+  <!-- baidu webmaster push -->
+  <script src='//push.zhanzhang.baidu.com/push.js'></script>
 </head>
-<body>
-<div id="container"> 
+<body class="home blog custom-background custom-font-enabled single-author">
+  <div id="page" class="hfeed site">
+      <header id="masthead" class="site-header" role="banner">
+    <hgroup>
+      <h1 class="site-title">
+        <a href="/" title="孙楚" rel="home">孙楚</a>
+      </h1>
+      
+        <h2 class="site-description">
+          <a href="/" id="subtitle">iOS搬砖妹纸</a>
+        </h2>
+      
+    </hgroup>
 
-    
-    <div id="wrap">
-	   
-
-<header id="header" class="hdpage">
-    
-    <div id="header-outer" class="outer">
-        
-        <div id="header-inner" class="inner">
-          <nav id="main-nav">
-            <a id="main-nav-toggle" class="nav-icon"></a>
-            
-              <a class="main-nav-link" href="/">
-                  
-                  
-
+    <nav id="site-navigation" class="main-navigation" role="navigation">
+            <button class="menu-toggle">菜单</button>
+            <a class="assistive-text" href="/#content" title="跳至内容">跳至内容</a><!--TODO-->
+            <div class="menu-main-container">
+                <ul id="menu-main" class="nav-menu">
                 
-                  Home
-                </a>
-            
-              <a class="main-nav-link" href="/API">
-                  
-                  
-
+                    <li class="menu-item menu-item-type-post_type menu-item-object-page"><a href="/">Home</a></li>
                 
-                  API
-                </a>
-            
-              <a class="main-nav-link" href="/tags">
-                  
-                  
-
+                    <li class="menu-item menu-item-type-post_type menu-item-object-page"><a href="/archives">Archives</a></li>
                 
-                  Tags
-                </a>
-            
-              <a class="main-nav-link" href="/archives">
-                  
-                  
-
-                
-                  Archives
-                </a>
-            
-              <a class="main-nav-link" href="/about">
-                  
-                  
-
-                
-                  About
-                </a>
-            
-              <a class="main-nav-link" href="https://github.com/JSLite/JSLite">
-                  
-                  
-
-                
-                  Github
-                </a>
-            
-          </nav>
-          <nav id="sub-nav">
-            
-              <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
-            
-            <a id="nav-search-btn" class="nav-icon" title="Search"></a>
-          </nav>
-          <div id="search-form-wrap">
-            <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" results="0" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://yoursite.com"></form>
-          </div>
-        </div>
-    </div>
+                </ul>
+            </div>
+    </nav>
 </header>
-		<div class="outer">
-		
-    <article id="post-iOS之单例模式初探" class="article article-type-post" itemscope itemprop="blogPost">
-      <div class="article-meta">
+      <div id="main" class="wrapper">
+        <div id="primary" class="site-content"><div id="content" role="main"><article id="post-iOS之单例模式初探" class="post-iOS之单例模式初探 post type-post status-publish format-standard hentry">
+    <!---->
+
+      <header class="entry-header">
         
-          <header class="article-header">
-            
-  
-    <a href="/2015/12/17/iOS之单例模式初探/">
-      <h1 class="article-title" itemprop="name">
-        iOS之单例模式初探
-      </h1>
-    </a>
-  
-
-
-
-          </header>
         
-
-        <!--<a href="/2015/12/17/iOS之单例模式初探/" class="article-date">
-  <time datetime="2015-12-17T13:06:39.000Z" itemprop="datePublished">2015-12-17</time>
-</a>-->
-        <!--  -->
-      </div>
-      <div class="article-inner">
-            
-            
-              <!--<header class="article-header">
-                
   
-    <a href="/2015/12/17/iOS之单例模式初探/">
-      <h1 class="article-title" itemprop="name">
-        iOS之单例模式初探
-      </h1>
-    </a>
+    <h1 class="entry-title article-title">
+      iOS之单例模式初探
+    </h1>
   
 
-
-
-              </header>-->
+        
+        <div class="comments-link">
             
-            <div class="article-entry" itemprop="articleBody">
-              <div class="page-toc">
-                
-              </div>
-              
-                <p><span><br>单例模式可能是设计模式中最简单的形式了，这一模式的意图就是使得类中的一个对象成为系统中的唯一实例。它提供了对类的对象所提供的资源的全局访问点。因此需要用一种只允许生成对象类的唯一实例的机制。下面让我们来看下单例的作用：<br>可以保证的程序运行过程，一个类只有一个示例，而且该实例易于供外界访问<br>从而方便地控制了实例个数，并节约系统资源。<br>单例模式的使用场合<br>类只能有一个实例，并且必须从一个为人数值的访问点对其访问。<br>这个唯一的实例只能通过子类化进行拓展，并且拓展的对象不会破坏客户端代码。<br>在Objective-C中方法都是公有的，而且OC的语言本身是动态类型的，因此所有类都可以相互发送对方的消息。，并且Cocoa框架使用计数的内存管理方式来维护对象的内存中的生存期。<br>下面让我们看一下OC当中的单例模式的写法，首先单例模式在ARC\MRC环境下的写法有所不同，需要编写2套不同的代码<br>可以用宏判断是否为ARC环境</span></p>
+            <a href="javascript:void(0);" data-url="http://yoursite.com/2015/12/17/iOS之单例模式初探/" data-id="ciqhud2fk0004scs625mvwuj4" class="leave-reply bdsharebuttonbox" data-cmd="more">Share</a>
+        </div><!-- .comments-link -->
+      </header><!-- .entry-header -->
+
+    <div class="entry-content">
+      
+        <p><span><br>单例模式可能是设计模式中最简单的形式了，这一模式的意图就是使得类中的一个对象成为系统中的唯一实例。它提供了对类的对象所提供的资源的全局访问点。因此需要用一种只允许生成对象类的唯一实例的机制。下面让我们来看下单例的作用：<br>可以保证的程序运行过程，一个类只有一个示例，而且该实例易于供外界访问<br>从而方便地控制了实例个数，并节约系统资源。<br>单例模式的使用场合<br>类只能有一个实例，并且必须从一个为人数值的访问点对其访问。<br>这个唯一的实例只能通过子类化进行拓展，并且拓展的对象不会破坏客户端代码。<br>在Objective-C中方法都是公有的，而且OC的语言本身是动态类型的，因此所有类都可以相互发送对方的消息。，并且Cocoa框架使用计数的内存管理方式来维护对象的内存中的生存期。<br>下面让我们看一下OC当中的单例模式的写法，首先单例模式在ARC\MRC环境下的写法有所不同，需要编写2套不同的代码<br>可以用宏判断是否为ARC环境</span></p>
 <p>#if _has_feature(objc_arc)</p>
 <p>#else<br>//MRC</p>
 <p>#endif<br>单例模式- ARC -方法一<br>ARC中单例模式的实现<br>在 .m中保留一个全局的static的实例<br> static id _instance;<br> //重写allocWithZone:方法，在这里创建唯一的实例(注意线程安全)</p>
@@ -216,133 +138,123 @@ userInfo:nil];
 <p>@implementation WMObject<br>WMSingletonM(Car)<br>@end<br>通过上面的演练我们基本上学习了一些基本的单例模式然后在Cocoa Touch框架中同样存在着大量的单例模式让我们来学习，比如UIApplication、UIAccelerometer、以及NSFileManager等等。所以在单例模式的学习上还是依旧的任重道远呀。。。</p>
 <p></p>
 
-              
-            </div>
-            <footer class="article-footer">
-              <a href="/2015/12/17/iOS之单例模式初探/" class="article-date">
-  <time datetime="2015-12-17T13:06:39.000Z" itemprop="datePublished">2015-12-17</time>
+      
+    </div><!-- .entry-content -->
+
+    <footer class="entry-meta">
+    <a href="/2015/12/17/iOS之单例模式初探/">
+    <time datetime="2015-12-17T13:06:39.000Z" class="entry-date">
+        2015-12-17
+    </time>
 </a>
-              <a data-url="http://yoursite.com/2015/12/17/iOS之单例模式初探/" data-id="ciqhu7l3a0003rds66lbfmxrz" class="article-share-link">Share</a>
-              
-              
-            </footer>
-      </div>
-      
-        
-<nav id="article-nav">
+    
+    
+    </footer>
+</article>
+
+
+    
+<nav class="nav-single">
+    <h3 class="assistive-text">文章导航</h3>
+    
+        <span class="nav-previous"><a href="/2016/07/08/blog错误导致部分文件丢失问题解决办法/" rel="prev"><span class="meta-nav">←</span> blog错误导致部分文件丢失问题解决办法</a></span>
+    
+    
+        <span class="nav-next"><a href="/2015/06/07/葵花宝典/" rel="next">葵花宝典 <span class="meta-nav">→</span></a></span>
+    
+</nav><!-- .nav-single -->
+
+
+
+
+
+
+
+</div></div>
+        <div id="secondary" class="widget-area" role="complementary">
   
-    <a href="/2016/07/08/blog错误导致部分文件丢失问题解决办法/" id="article-nav-newer" class="article-nav-link-wrap">
-      <strong class="article-nav-caption">Newer</strong>
-      <div class="article-nav-title">
-        
-          blog错误导致部分文件丢失问题解决办法
-        
-      </div>
-    </a>
-  
-  
-    <a href="/2015/06/07/葵花宝典/" id="article-nav-older" class="article-nav-link-wrap">
-      <strong class="article-nav-caption">Older</strong>
-      <div class="article-nav-title">葵花宝典</div>
-    </a>
-  
-</nav>
-
-      
-    </article>
-    <script type="text/javascript">
-      window.onscroll = function(){ 
-        $(function(){
-          var $toc = $('.page-toc'),
-              $article = $('.article-entry')
-              toc_top = $toc.offset().top
-              tocsub_width = $toc.children().width()
-              article_height = $article.children().height()
-              scroll_top = document.body.scrollTop
-              screen_h = $(window).height()
-              footer_top = $('.article-footer').offset().top - $(window).height()
-              if(toc_top&&scroll_top&&scroll_top>toc_top&&scroll_top<footer_top){
-                $toc.children().css({
-                  "position": "fixed",
-                  "height": (screen_h -20)+'px',
-                  "overflow": "auto"
-                })
-                $article.css('margin-right',tocsub_width+'px')
-              }else{
-                $toc.children().css({
-                  "position": "relative",
-                  "height":'inherit',
-                  "overflow": "auto"
-                })
-                $article.css('margin-right',0+'px')
-              }
-        })
-      } 
-    </script>
-
-
-
-
-
-
-
-
-		</div>
-		
-
-<footer id="footer">
-  
-  <div class="outer">
-    <div id="footer-info" class="inner">
-        <div class="left">
-            &copy; 2016 John Doe<br>
-            Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> and Theme by <a href="https://github.com/jaywcjlove/hexoThemeKacper">hexoThemeKacper </a>
-        </div>
-        <div class="right">
-            
-        </div>
+    <aside id="search" class="widget widget_search"><form role="search" method="get" accept-charset="utf-8" id="searchform" class="searchform" action="//google.com/search">
+    <div>
+        <input type="text" value="" name="s" id="s" />
+        <input type="submit" id="searchsubmit" value="搜索" />
     </div>
-  </div>
+</form></aside>
+  
+    
+  
+    
+  
+    
+  <aside class="widget">
+    <h3 class="widget-title">Recents</h3>
+    <div class="widget-content">
+      <ul>
+        
+          <li>
+            <a href="/2016/07/08/cocoaPods新版使用语法/">cocoaPods新版使用语法</a>
+          </li>
+        
+          <li>
+            <a href="/2016/07/08/blog错误导致部分文件丢失问题解决办法/">blog错误导致部分文件丢失问题解决办法</a>
+          </li>
+        
+          <li>
+            <a href="/2015/12/17/iOS之单例模式初探/">iOS之单例模式初探</a>
+          </li>
+        
+          <li>
+            <a href="/2015/06/07/葵花宝典/">葵花宝典</a>
+          </li>
+        
+          <li>
+            <a href="/2015/04/04/作为一个有经验的iOS工程师你这些应该最熟悉/">作为一个有经验的iOS工程师你这些应该最熟悉</a>
+          </li>
+        
+      </ul>
+    </div>
+  </aside>
+
+  
+    
+  <aside class="widget">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget-content">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/iOS/">iOS</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/iOS-HTML5/">iOS HTML5</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ios/">ios</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ios-HTML5跨平台/">ios HTML5跨平台</a><span class="tag-list-count">2</span></li></ul>
+    </div>
+  </aside>
+
+  
+    
+  <aside class="widget">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget-content tagcloud">
+      <a href="/tags/iOS/" style="font-size: 10px;">iOS</a> <a href="/tags/iOS-HTML5/" style="font-size: 10px;">iOS HTML5</a> <a href="/tags/ios/" style="font-size: 20px;">ios</a> <a href="/tags/ios-HTML5跨平台/" style="font-size: 20px;">ios HTML5跨平台</a>
+    </div>
+  </aside>
+
+  
+</div>
+      </div>
+      <footer id="colophon" role="contentinfo">
+    <p>&copy; 2016 John Doe
+    All rights reserved.</p>
+    <p>Powered by <a href="http://hexo.io/" target="_blank">Hexo</a></p>
 </footer>
-<script src="//cdn.bootcss.com/jquery/2.0.3/jquery.min.js"></script>
+    <script>window._bd_share_config={"common":{"bdSnsKey":{},"bdText":"","bdMini":"1","bdMiniList":false,"bdPic":"","bdStyle":"2","bdSize":"16"},"share":{}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];</script>
+
+<script src="/js/jquery-2.0.3.min.js"></script>
 
 
-<script type="text/javascript">
-$(function(){
-  var $img = $('.article-entry img'),
-      $link = $img.css({
-        "display":"inline-block"
-      }).parent()
-
-  if($link.parent().is("a")){
-      $img.each(function(idx,item) {
-      $(this).parent().attr('href',$(this).parent().parent().attr('href'))
-    })
-  }
-})
-</script>
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
 
 
 <script src="/js/script.js"></script>
 
-  	</div>
-    <nav id="mobile-nav">
-  
-    <a href="/" class="mobile-nav-link">Home</a>
-  
-    <a href="/API" class="mobile-nav-link">API</a>
-  
-    <a href="/tags" class="mobile-nav-link">Tags</a>
-  
-    <a href="/archives" class="mobile-nav-link">Archives</a>
-  
-    <a href="/about" class="mobile-nav-link">About</a>
-  
-    <a href="https://github.com/JSLite/JSLite" class="mobile-nav-link">Github</a>
-  
-</nav>
-    
-</div>
+<script src="/js/navigation.js"></script>
+
+<div id="bg"></div>
+
+  </div>
 </body>
 </html>
-
