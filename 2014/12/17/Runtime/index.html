@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  
+  <meta name="description" content="北纬24度的四月是夏天" />
+  
+
+  
+  
+  
+  
+  
+  
+  <title>Runtime | 孙楚的技术博客</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="注：本文是对 Colin Wheeler 的 Understanding the Objective-C Runtime 的翻译。
+初学 Objective-C(以下简称ObjC) 的人很容易忽略一个 ObjC 特性 —— ObjC Runtime。这是因为这门语言很容易上手，几个小时就能学会怎么使用，所以程序员们往往会把时间都花在了解 Cocoa 框架以及调整自己的程序的表现上。然而 Runti">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Runtime">
+<meta property="og:url" content="http://yoursite.com/2014/12/17/Runtime/index.html">
+<meta property="og:site_name" content="孙楚的技术博客">
+<meta property="og:description" content="注：本文是对 Colin Wheeler 的 Understanding the Objective-C Runtime 的翻译。
+初学 Objective-C(以下简称ObjC) 的人很容易忽略一个 ObjC 特性 —— ObjC Runtime。这是因为这门语言很容易上手，几个小时就能学会怎么使用，所以程序员们往往会把时间都花在了解 Cocoa 框架以及调整自己的程序的表现上。然而 Runti">
+<meta property="og:updated_time" content="2016-07-15T08:09:01.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Runtime">
+<meta name="twitter:description" content="注：本文是对 Colin Wheeler 的 Understanding the Objective-C Runtime 的翻译。
+初学 Objective-C(以下简称ObjC) 的人很容易忽略一个 ObjC 特性 —— ObjC Runtime。这是因为这门语言很容易上手，几个小时就能学会怎么使用，所以程序员们往往会把时间都花在了解 Cocoa 框架以及调整自己的程序的表现上。然而 Runti">
+  
+  
+    <link rel="icon" href="/css/images/favicon.ico">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+
+  
+  <!-- baidu webmaster push -->
+  <script src='//push.zhanzhang.baidu.com/push.js'></script>
+</head>
+<body class="home blog custom-background custom-font-enabled single-author">
+  <div id="page" class="hfeed site">
+      <header id="masthead" class="site-header" role="banner">
+    <hgroup>
+      <h1 class="site-title">
+        <a href="/" title="孙楚的技术博客" rel="home">孙楚的技术博客</a>
+      </h1>
+      
+        <h2 class="site-description">
+          <a href="/" id="subtitle">iOS搬砖妹纸</a>
+        </h2>
+      
+    </hgroup>
+
+    <nav id="site-navigation" class="main-navigation" role="navigation">
+            <button class="menu-toggle">菜单</button>
+            <a class="assistive-text" href="/#content" title="跳至内容">跳至内容</a><!--TODO-->
+            <div class="menu-main-container">
+                <ul id="menu-main" class="nav-menu">
+                
+                    <li class="menu-item menu-item-type-post_type menu-item-object-page"><a href="/">Home</a></li>
+                
+                    <li class="menu-item menu-item-type-post_type menu-item-object-page"><a href="/archives">Archives</a></li>
+                
+                </ul>
+            </div>
+    </nav>
+</header>
+      <div id="main" class="wrapper">
+        <div id="primary" class="site-content"><div id="content" role="main"><article id="转载、理解objective-c-Runtime" class="转载、理解objective-c-Runtime post type-post status-publish format-standard hentry">
+    <!---->
+
+      <header class="entry-header">
+        
+        
+  
+    <h1 class="entry-title article-title">
+      Runtime
+    </h1>
+  
+
+        
+        <div class="comments-link">
+            
+            <a href="javascript:void(0);" data-url="http://yoursite.com/2014/12/17/Runtime/" data-id="ciqngrlul00009ns6k6ki447c" class="leave-reply bdsharebuttonbox" data-cmd="more">Share</a>
+        </div><!-- .comments-link -->
+      </header><!-- .entry-header -->
+
+    <div class="entry-content">
+      
+        <p><span><br>注：本文是对 Colin Wheeler 的 Understanding the Objective-C Runtime 的翻译。</span></p>
+<p>初学 Objective-C(以下简称ObjC) 的人很容易忽略一个 ObjC 特性 —— ObjC Runtime。这是因为这门语言很容易上手，几个小时就能学会怎么使用，所以程序员们往往会把时间都花在了解 Cocoa 框架以及调整自己的程序的表现上。然而 Runtime 应该是每一个 ObjC 都应该要了解的东西，至少要理解编译器会把</p>
+<p>[target doMethodWith:var1];<br>编译成：</p>
+<p>objc_msgSend(target,@selector(doMethodWith:),var1);<br>这样的语句。理解 ObjC Runtime 的工作原理，有助于你更深入地去理解 ObjC 这门语言，理解你的 App 是怎样跑起来的。我想所有的 Mac/iPhone 开发者，无论水平如何，都会从中获益的。</p>
+<p>ObjC Runtime 是开源的</p>
+<p>ObjC Runtime 的代码是开源的，可以从这个站点下载： opensource.apple.com。</p>
+<p>这个是所有开源代码的链接： <a href="http://www.opensource.apple.com/source/" target="_blank" rel="external">http://www.opensource.apple.com/source/</a></p>
+<p>这个是ObjC rumtime 的源代码: <a href="http://www.opensource.apple.com/source/objc4/" target="_blank" rel="external">http://www.opensource.apple.com/source/objc4/</a><br>4应该代表的是build版本而不是语言版本，现在是ObjC 2.0</p>
+<p>动态 vs 静态语言</p>
+<p>ObjC 是一种面向runtime(运行时)的语言，也就是说，它会尽可能地把代码执行的决策从编译和链接的时候，推迟到运行时。这给程序员写代码带来很大的灵活性，比如说你可以把消息转发给你想要的对象，或者随意交换一个方法的实现之类的。这就要求 runtime 能检测一个对象是否能对一个方法进行响应，然后再把这个方法分发到对应的对象去。我们拿 C 来跟 ObjC 对比一下。在 C 语言里面，一切从 main 函数开始，程序员写代码的时候是自上而下地，一个 C 的结构体或者说类吧，是不能把方法调用转发给其他对象的。举个栗子：</p>
+<p>#include &lt; stdio.h &gt;</p>
+<p>int main(int argc, const char **argv[])<br>{<br>        printf(“Hello World!”);<br>        return 0;<br>}<br>这段代码被编译器解析，优化后，会变成一堆汇编代码：</p>
+<p>.text<br> .align 4,0x90<br> .globl _main<br>_main:<br>Leh_func_begin1:<br> pushq %rbp<br>Llabel1:<br> movq %rsp, %rbp<br>Llabel2:<br> subq $16, %rsp<br>Llabel3:<br> movq %rsi, %rax<br> movl %edi, %ecx<br> movl %ecx, -8(%rbp)<br> movq %rax, -16(%rbp)<br> xorb %al, %al<br> leaq LC(%rip), %rcx<br> movq %rcx, %rdi<br> call _printf<br> movl $0, -4(%rbp)<br> movl -4(%rbp), %eax<br> addq $16, %rsp<br> popq %rbp<br> ret<br>Leh_func_end1:<br> .cstring<br>LC:<br> .asciz “Hello World!”<br>然后，再链接 include 的库，完了生成可执行代码。对比一下 ObjC，当我们初学这门语言的时候教程是这么说滴：用中括号括起来的语句，</p>
+<p>[self doSomethingWithVar:var1];<br>被编译器编译之后会变成：</p>
+<p>objc_msgSend(self,@selector(doSomethingWithVar:),var1);<br>一个 C 方法，传入了三个变量，self指针，要执行的方法 @selector(doSomethingWithVar:) 还有一个参数 var1。但是在这之后就不晓得发生什么了。</p>
+<p>什么是 Objective-C Runtime?</p>
+<p>ObjC Runtime 其实是一个 Runtime 库，基本上用 C 和汇编写的，这个库使得 C 语言有了面向对象的能力（脑中浮现当你乔帮主参观了施乐帕克的 SmallTalk 之后嘴角一抹浅笑）。这个库做的事前就是加载类的信息，进行方法的分发和转发之类的。</p>
+<p>Objective-C Runtime 术语</p>
+<p>再往下深谈之前咱先介绍几个术语。</p>
+<p>2 Runtimes<br>目前说来Runtime有两种，一个 Modern Runtime 和一个 Legacy Runtime。Modern Runtime 覆盖了64位的Mac OS X Apps，还有 iOS Apps，Legacy Runtime 是早期用来给32位 Mac OS X Apps 用的，也就是可以不用管就是了。<br>2 Basic types of Methods<br>一种 Instance Method，还有 Class Method。instance method 就是带“-”号的，需要实例化才能用的，如 :</p>
+<p>-(void)doFoo;</p>
+<p>[aObj doFoot];<br>Class Method 就是带“+”号的，类似于静态方法可以直接调用：</p>
+<p>+(id)alloc;</p>
+<p>[ClassName alloc];<br>这些方法跟 C 函数一样，就是一组代码，完成一个比较小的任务。</p>
+<p>-(NSString *)movieTitle<br>{<br>    return @”Futurama: Into the Wild Green Yonder”;<br>}<br>Selector<br>一个 Selector 事实上是一个 C 的结构体，表示的是一个方法。定义是：</p>
+<p>typedef struct objc_selector  *SEL;<br>使用起来就是：</p>
+<p>SEL aSel = @selector(movieTitle);<br>这样可以直接取一个selector，如果是传递消息（类似于C的方法调用）就是：</p>
+<p>[target getMovieTitleForObject:obj];<br>在 ObjC 里面，用’[]’括起来的表达式就是一个消息。包括了一个 target，就是要接收消息的对象，一个要被调用的方法还有一些你要传递的参数。类似于 C 函数的调用，但是又有所不同。事实上上面这个语句你仅仅是传递了 ObjC 消息，并不代表它就会一定被执行。target 这个对象会检测是谁发起的这个请求，然后决策是要执行这个方法还是其他方法，或者转发给其他的对象。<br>Class<br>Class 的定义是这样的：</p>
+<p>typedef struct objc_class <em>Class;<br>typedef struct objc_object {<br>    Class isa;<br>} </em>id;<br>我们可以看到这里这里有两个结构体，一个类结构体一个对象结构体。所有的 objc_object 对象结构体都有一个 isa 指针，这个 isa 指向它所属的类，在运行时就靠这个指针来检测这个对象是否可以响应一个 selector。完了我们看到最后有一个 id 指针。这个指针其实就只是用来代表一个 ObjC 对象，有点类似于 C++ 的泛型。当你拿到一个 id 指针之后，就可以获取这个对象的类，并且可以检测其是否响应一个 selector。这就是对一个 delegate 常用的调用方式啦。这样说还有点抽象，我们看看 LLVM/Clang 的文档对 Blocks 的定义：</p>
+<p> struct Block_literal_1 {<br>    void <em>isa; // initialized to &amp;_NSConcreteStackBlock or &amp;_NSConcreteGlobalBlock<br>    int flags;<br>    int reserved;<br>    void (</em>invoke)(void <em>, …);<br>    struct Block_descriptor_1 {<br> unsigned long int reserved; // NULL<br>     unsigned long int size;  // sizeof(struct Block_literal_1)<br> // optional helper functions<br>     void (</em>copy_helper)(void <em>dst, void </em>src);<br>     void (<em>dispose_helper)(void </em>src);<br>    } *descriptor;<br>    // imported variables<br>};<br>可以看到一个 block 是被设计成一个对象的，拥有一个 isa 指针，所以你可以对一个 block 使用 retain, release, copy 这些方法。<br>IMP (Method Implementations)<br>接下来看看啥是IMP。</p>
+<p>typedef id (*IMP)(id self,SEL _cmd,…);<br>一个 IMP 就是一个函数指针，这是由编译器生成的，当你发起一个 ObjC 消息之后，最终它会执行的那个代码，就是由这个函数指针指定的。<br>Objective-C Classes<br>OK，回过头来看看一个 ObjC 的类。举一个栗子：</p>
+<p>@interface MyClass : NSObject {<br>//vars<br>NSInteger counter;<br>}<br>//methods<br>-(void)doFoo;<br>@end<br>定义一个类我们可以写成如上代码，而在运行时，一个类就不仅仅是上面看到的这些东西了：</p>
+<p>#if !<strong>OBJC2</strong><br>    Class super_class                                        OBJC2_UNAVAILABLE;<br>    const char <em>name                                         OBJC2_UNAVAILABLE;<br>    long version                                             OBJC2_UNAVAILABLE;<br>    long info                                                OBJC2_UNAVAILABLE;<br>    long instance_size                                       OBJC2_UNAVAILABLE;<br>    struct objc_ivar_list </em>ivars                             OBJC2_UNAVAILABLE;<br>    struct objc_method_list <em>*methodLists                    OBJC2_UNAVAILABLE;<br>    struct objc_cache </em>cache                                 OBJC2_UNAVAILABLE;<br>    struct objc_protocol_list *protocols                     OBJC2_UNAVAILABLE;</p>
+<p>#endif<br>可以看到运行时一个类还关联了它的父类指针，类名，成员变量，方法，cache 还有附属的 protocol。<br>那么类定义了对象并且自己也是个对象？这是咋整滴？</p>
+<p>上面我提到过一个 ObjC 类同时也是一个对象，为了处理类和对象的关系，runtime 库创建了一种叫做 标签类 元类（Meta Class）的东西。当你发出一个消息的时候，比方说</p>
+<p>[NSObject alloc];<br>你事实上是把这个消息发给了一个类对象（Class Object），这个类对象必须是一个 Meta Class 的实例，而这个 Meta Class 同时也是一个根 MetaClass 的实例。当你继承了 NSObject 成为其子类的时候，你的类指针就会指向 NSObject 为其父类。但是 Meta Class 不太一样，所有的 Meta Class 都指向根 Meta Class 为其父类。一个 Meta Class 持有所有能响应的方法。所以当 [NSObject alloc] 这条消息发出的时候，objc_msgSend() 这个方法会去 NSObject 它的 Meta Class 里面去查找是否有响应这个 selector 的方法，然后对 NSObject 这个类对象执行方法调用。</p>
+<p>为啥我们要继承 Apple Classes</p>
+<p>初学 Cocoa 开发的时候，多数教程都要我们继承一个类比方 NSObject，然后我们就开始 Coding 了。比方说：</p>
+<p>MyObject *object = [[MyObject alloc] init];<br>这个语句用来初始化一个实例，类似于 C++ 的 new 关键字。这个语句首先会执行 MyObject 这个类的 +alloc 方法，Apple 的官方文档是这样说的：</p>
+<p>The isa instance variable of the new instance is initialized to a data structure that describes the class; memory for all other instance variables is set to 0.</p>
+<p>新建的实例中，isa 成员变量会变初始化成一个数据结构体，用来描述所指向的类。其他的成员变量的内存会被置为0.<br>所以继承 Apple 的类我们不仅是获得了很多很好用的属性，而且也继承了这种内存分配的方法。</p>
+<p>那么啥是 Class Cache(objc_cache *cache)</p>
+<p>刚刚我们看到 runtime 里面有一个指针叫 objc_cache *cache，这是用来缓存方法调用的。现在我们知道一个实例对象被传递一个消息的时候，它会根据 isa 指针去查找能够响应这个消息的对象。但是实际上我们在用的时候，只有一部分方法是常用的，很多方法其实很少用或者根本用不到。比如一个object你可能从来都不用copy方法，那我要是每次调用的时候还去遍历一遍所有的方法那就太笨了。于是 cache 就应运而生了，每次你调用过一个方法，之后，这个方法就会被存到这个 cache 列表里面去，下次调用的时候 runtime 会优先去 cache 里面查找，提高了调用的效率。举一个栗子：</p>
+<p>MyObject *obj = [[MyObject alloc] init]; // MyObject 的父类是 NSObject</p>
+<p>@implementation MyObject<br>-(id)init {<br>    if(self = [super init]){<br>        [self setVarA:@”blah”];<br>    }<br>    return self;<br>}<br>@end<br>这段代码是这样执行的：</p>
+<p>[MyObject alloc] 先被执行。但是由于 MyObject 这个类没有 +alloc 这个方法，于是去父类 NSObject 查找。<br>检测 NSObject 是否响应 +alloc 方法，发现响应，于是检测 MyObject 类，根据其所需的内存空间大小开始分配内存空间，然后把 isa 指针指向 MyObject 类。那么 +alloc 就被加进 cache 列表里面了。<br>完了执行 -init 方法，因为 MyObject 响应该方法，直接加入 cache。<br>执行 self = [super init] 语句。这里直接通过 super 关键字调用父类的 init 方法，确保父类初始化成功，然后再执行自己的初始化逻辑。<br>OK，这就是一个很简单的初始化过程，在 NSObject 类里面，alloc 和 init　没做什么特别重大的事情，但是，ObjC 特性允许你的 alloc 和 init 返回的值不同，也就是说，你可以在你的 init 函数里面做一些很复杂的初始化操作，但是返回出去一个简单的对象，这就隐藏了类的复杂性。再举个栗子：</p>
+<p>#import &lt; Foundation/Foundation.h&gt;</p>
+<p>@interface MyObject : NSObject<br>{<br> NSString *aString;<br>}</p>
+<p>@property(retain) NSString *aString;</p>
+<p>@end</p>
+<p>@implementation MyObject</p>
+<p>-(id)init<br>{<br> if (self = [super init]) {<br>  [self setAString:nil];<br> }<br> return self;<br>}</p>
+<p>@synthesize aString;</p>
+<p>@end</p>
+<p>int main (int argc, const char <em> argv[]) {<br>    NSAutoreleasePool </em> pool = [[NSAutoreleasePool alloc] init];</p>
+<p> id obj1 = [NSMutableArray alloc];<br> id obj2 = [[NSMutableArray alloc] init];</p>
+<p> id obj3 = [NSArray alloc];<br> id obj4 = [[NSArray alloc] initWithObjects:@”Hello”,nil];</p>
+<p> NSLog(@”obj1 class is %@”,NSStringFromClass([obj1 class]));<br> NSLog(@”obj2 class is %@”,NSStringFromClass([obj2 class]));</p>
+<p> NSLog(@”obj3 class is %@”,NSStringFromClass([obj3 class]));<br> NSLog(@”obj4 class is %@”,NSStringFromClass([obj4 class]));</p>
+<p> id obj5 = [MyObject alloc];<br> id obj6 = [[MyObject alloc] init];</p>
+<p> NSLog(@”obj5 class is %@”,NSStringFromClass([obj5 class]));<br> NSLog(@”obj6 class is %@”,NSStringFromClass([obj6 class]));</p>
+<p> [pool drain];<br>    return 0;<br>}<br>如果你是ObjC的初学者，那么你很可能会认为这段代码执的输出会是：</p>
+<p>NSMutableArray<br>NSMutableArray<br>NSArray<br>NSArray<br>MyObject<br>MyObject<br>但事实上是这样的：</p>
+<p>obj1 class is <strong>NSPlaceholderArray<br>obj2 class is NSCFArray<br>obj3 class is </strong>NSPlaceholderArray<br>obj4 class is NSCFArray<br>obj5 class is MyObject<br>obj6 class is MyObject<br>这是因为 ObjC 是允许运行 +alloc 返回一个特定的类，而 init 方法又返回一个不同的类的。可以看到 NSMutableArray 是对普通数组的封装，内部实现是复杂的，但是对外隐藏了复杂性。</p>
+<p>OK说回 objc_msgSend 这个方法</p>
+<p>这个方法做的事情不少，举个栗子：</p>
+<p>[self printMessageWithString:@”Hello World!”];<br>这句语句被编译成这样：</p>
+<p>objc_msgSend(self,@selector(printMessageWithString:),@”Hello World!”);<br>这个方法先去查找 self 这个对象或者其父类是否响应 @selector(printMessageWithString:)，如果从这个类的方法分发表或者 cache 里面找到了，就调用它对应的函数指针。如果找不到，那就会执行一些其他的东西。步骤如下：</p>
+<p>检测这个 selector 是不是要忽略的。比如 Mac OS X 开发，有了垃圾回收就不理会 retain, release 这些函数了。<br>检测这个 target 是不是 nil 对象。ObjC 的特性是允许对一个 nil 对象执行任何一个方法不会 Crash，因为会被忽略掉。<br>如果上面两个都过了，那就开始查找这个类的 IMP，先从 cache 里面找，完了找得到就跳到对应的函数去执行。<br>如果 cache 找不到就找一下方法分发表。<br>如果还找不到就要开始消息转发逻辑了。<br>在编译的时候，你定义的方法比如：</p>
+<p>-(int)doComputeWithNum:(int)aNum<br>会编译成：</p>
+<p>int aClass_doComputeWithNum(aClass *self,SEL _cmd,int aNum)<br>然后由 runtime 去调用指向你的这个方法的函数指针。那么之前我们说你发起消息其实不是对方法的直接调用，其实 Cocoa 还是提供了可以直接调用的方法的：</p>
+<p>// 首先定义一个 C 语言的函数指针<br>int (computeNum *)(id,SEL,int);</p>
+<p>// 使用 methodForSelector 方法获取对应与该 selector 的杉树指针，跟 objc_msgSend 方法拿到的是一样的<br>// <strong>methodForSelector 这个方法是 Cocoa 提供的，不是 ObjC runtime 库提供的</strong><br>computeNum = (int (*)(id,SEL,int))[target methodForSelector:@selector(doComputeWithNum:)];</p>
+<p>// 现在可以直接调用该函数了，跟调用 C 函数是一样的<br>computeNum(obj,@selector(doComputeWithNum:),aNum);<br>如果你需要的话，你可以通过这种方式你来确保这个方法一定会被调用。</p>
+<p>消息转发机制</p>
+<p>在 ObjC 这门语言中，发送消息给一个并不响应这个方法的对象，是合法的，应该也是故意这么设计的。换句话说，我可以对任意一个对象传递任意一个消息（看起来有点像对任意一个类调用任意一个方法，当然事实上不是），当然如果最后找不到能调用的方法就会 Crash 掉。</p>
+<p>Apple 设计这种机制的原因之一就是——用来模拟多重继承（ObjC 原生是不支持多重继承的）。或者你希望把你的复杂设计隐藏起来。这种转发机制是 Runtime 非常重要的一个特性，大概的步骤如下：</p>
+<p>查找该类及其父类的 cahce 和方法分发表，在找不到的情况下执行2。<br>执行 + (BOOL) resolveInstanceMethod:(SEL)aSEL 方法。<br>这就给了程序员一次机会，可以告诉 runtime 在找不到改方法的情况下执行什么方法。举个栗子，先定义一个函数：</p>
+<p>void fooMethod(id obj, SEL _cmd)<br>{<br> NSLog(@”Doing Foo”);<br>}<br>完了重载 resolveInstanceMethod 方法：</p>
+<p>+(BOOL)resolveInstanceMethod:(SEL)aSEL<br>{<br>    if(aSEL == @selector(doFoo:)){<br>        class_addMethod([self class],aSEL,(IMP)fooMethod,”v@:”);<br>        return YES;<br>    }<br>    return [super resolveInstanceMethod];<br>}<br>其中 “v@:” 表示返回值和参数，这个符号涉及 Type Encoding，可以参考Apple的文档 ObjC Runtime Guide。<br>接下来 Runtime 会调用 – (id)forwardingTargetForSelector:(SEL)aSelector 方法。<br>这就给了程序员第二次机会，如果你没办法在自己的类里面找到替代方法，你就重载这个方法，然后把消息转给其他的Object。</p>
+<ul>
+<li><p>(id)forwardingTargetForSelector:(SEL)aSelector<br>{<br>  if(aSelector == @selector(mysteriousMethod:)){</p>
+<pre><code>return alternateObject;
+</code></pre><p>  }<br>  return [super forwardingTargetForSelector:aSelector];<br>}<br>这样你就可以把消息转给别人了。当然这里你不能 return self,不然就死循环了=.=<br>最后，Runtime 会调用 – (void)forwardInvocation:(NSInvocation <em>)anInvocation 这个方法。NSInvocation 其实就是一条消息的封装。如果你能拿到 NSInvocation，那你就能修改这条消息的 target, selector 和 arguments。举个栗子：<br>-(void)forwardInvocation:(NSInvocation </em>)invocation<br>{<br>  SEL invSEL = invocation.selector;</p>
+<p>  if([altObject respondsToSelector:invSEL]) {</p>
+<pre><code>[invocation invokeWithTarget:altObject];
+</code></pre><p>  } else {</p>
+<pre><code>[self doesNotRecognizeSelector:invSEL];
+</code></pre><p>  }<br>}<br>默认情况下 NSObject 对 forwardInvocation 的实现就是简单地执行 -doesNotRecognizeSelector: 这个方法，所以如果你想真正的在最后关头去转发消息你可以重载这个方法（好折腾-.-）。</p>
+</li>
+</ul>
+<p>原文后面介绍了 Non Fragile ivars (Modern Runtime)， Objective-C Associated Objects 和 Hybrid vTable Dispatch。鉴于一是底层的可以不用理会，一是早司空见惯的不用详谈，还有一个是很简单的，就是一个建立在方法分发表里面填入默认常用的 method，所以有兴趣的读者可以自行查阅原文，这里就不详谈鸟。</p>
+<p></p>
+
+      
+    </div><!-- .entry-content -->
+
+    <footer class="entry-meta">
+    <a href="/2014/12/17/Runtime/">
+    <time datetime="2014-12-17T13:23:20.000Z" class="entry-date">
+        2014-12-17
+    </time>
+</a>
+    
+    
+    </footer>
+</article>
+
+
+    
+<nav class="nav-single">
+    <h3 class="assistive-text">文章导航</h3>
+    
+        <span class="nav-previous"><a href="/2015/03/01/iOS即时通讯/" rel="prev"><span class="meta-nav">←</span> iOS即时通讯</a></span>
+    
+    
+        <span class="nav-next"><a href="/2014/05/22/更换博客主题/" rel="next">更换博客主题 <span class="meta-nav">→</span></a></span>
+    
+</nav><!-- .nav-single -->
+
+
+
+
+
+
+
+</div></div>
+        <div id="secondary" class="widget-area" role="complementary">
+  
+    <aside id="search" class="widget widget_search"><form role="search" method="get" accept-charset="utf-8" id="searchform" class="searchform" action="//google.com/search">
+    <div>
+        <input type="text" value="" name="s" id="s" />
+        <input type="submit" id="searchsubmit" value="搜索" />
+    </div>
+</form></aside>
+  
+    
+  
+    
+  
+    
+  <aside class="widget">
+    <h3 class="widget-title">Recents</h3>
+    <div class="widget-content">
+      <ul>
+        
+          <li>
+            <a href="/2016/07/08/cocoaPods新版使用语法/">cocoaPods新版使用语法</a>
+          </li>
+        
+          <li>
+            <a href="/2016/07/08/blog错误导致部分文件丢失问题解决办法/">blog错误导致部分文件丢失问题解决办法</a>
+          </li>
+        
+          <li>
+            <a href="/2015/12/17/iOS之单例模式初探/">iOS之单例模式初探</a>
+          </li>
+        
+          <li>
+            <a href="/2015/06/07/葵花宝典/">葵花宝典</a>
+          </li>
+        
+          <li>
+            <a href="/2015/04/04/作为一个有经验的iOS工程师你这些应该最熟悉/">作为一个有经验的iOS工程师你这些应该最熟悉</a>
+          </li>
+        
+      </ul>
+    </div>
+  </aside>
+
+  
+    
+  <aside class="widget">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget-content">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/iOS/">iOS</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/iOS-HTML5/">iOS HTML5</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ios/">ios</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ios-HTML5跨平台/">ios HTML5跨平台</a><span class="tag-list-count">2</span></li></ul>
+    </div>
+  </aside>
+
+  
+    
+  <aside class="widget">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget-content tagcloud">
+      <a href="/tags/iOS/" style="font-size: 10px;">iOS</a> <a href="/tags/iOS-HTML5/" style="font-size: 10px;">iOS HTML5</a> <a href="/tags/ios/" style="font-size: 20px;">ios</a> <a href="/tags/ios-HTML5跨平台/" style="font-size: 20px;">ios HTML5跨平台</a>
+    </div>
+  </aside>
+
+  
+</div>
+      </div>
+      <footer id="colophon" role="contentinfo">
+    <p>&copy; 2016 sunny bird
+    All rights reserved.</p>
+    <p>Powered by <a href="http://hexo.io/" target="_blank">Hexo</a></p>
+</footer>
+    <script>window._bd_share_config={"common":{"bdSnsKey":{},"bdText":"","bdMini":"1","bdMiniList":false,"bdPic":"","bdStyle":"2","bdSize":"16"},"share":{}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];</script>
+
+<script src="/js/jquery-2.0.3.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+<script src="/js/navigation.js"></script>
+
+<div id="bg"></div>
+
+  </div>
+</body>
+</html>
